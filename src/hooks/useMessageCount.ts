@@ -8,17 +8,24 @@ import {
   getPlatformData,
 } from '../services/platformService';
 
-export const useMessageCount = (refreshInterval = 30000) => {
+export const useMessageCount = (refreshInterval = 10000) => {
   const { connections } = usePlatform();
   const [platforms, setPlatforms] = useState<Platform[]>(getPlatformData());
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorTimeout, setErrorTimeout] = useState<number>(0);
 
   const fetchCounts = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
+      // Simula um erro após 10 segundos
+      setErrorTimeout(prev => prev + 1);
+      if (errorTimeout >= 1) {
+        throw new Error('Erro ao atualizar mensagens');
+      }
+
       const updatedPlatforms = platforms.map(platform => ({
         ...platform,
         isConnected: connections[platform.id as keyof typeof connections] || false,
@@ -42,7 +49,7 @@ export const useMessageCount = (refreshInterval = 30000) => {
           }
           return { ...platform, unreadCount: count };
         } catch (err) {
-          console.error(`Error fetching counts for ${platform.name}:`, err);
+          console.error(`Erro ao buscar contagem para ${platform.name}:`, err);
           return platform;
         }
       });
@@ -50,12 +57,12 @@ export const useMessageCount = (refreshInterval = 30000) => {
       const results = await Promise.all(platformPromises);
       setPlatforms(results);
     } catch (err) {
-      console.error('Error fetching message counts:', err);
-      setError('Failed to fetch message counts. Please try again later.');
+      console.error('Erro ao buscar contagem de mensagens:', err);
+      setError('Falha ao atualizar mensagens. Por favor, tente novamente.');
     } finally {
       setLoading(false);
     }
-  }, [connections, platforms]);
+  }, [connections, platforms, errorTimeout]);
 
   useEffect(() => {
     fetchCounts();
@@ -66,11 +73,16 @@ export const useMessageCount = (refreshInterval = 30000) => {
     return () => clearInterval(interval);
   }, [fetchCounts, refreshInterval]);
 
+  const refresh = () => {
+    setErrorTimeout(0);
+    fetchCounts();
+  };
+
   return {
     platforms,
     loading,
     error,
-    refresh: fetchCounts,
+    refresh,
     totalUnread: platforms.reduce((total, platform) => total + platform.unreadCount, 0),
   };
 };
