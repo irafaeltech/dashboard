@@ -1,16 +1,14 @@
 Dashboard de Notificações Multicanal
+
 Trabalho apresentado na disciplina de Desenvolvimento Rápido de Aplicações em Python
-Professor
-Mauro Rodrigues Alves
 
-Aluno
-Rafael Sobral da Silva
+Professor: Mauro Rodrigues Alves Nogueira
 
-Cliente
-Emerso Carlos Rocha
+Aluno: Rafael Sobral da Silva
 
-Empresa
-ER Consultoria
+Cliente: Emerso Carlos Rocha
+
+Empresa: ER Consultoria
 
 Descrição do Projeto
 Este projeto consiste em um Dashboard interativo que exibe em tempo real a quantidade de mensagens recebidas por três plataformas de comunicação amplamente utilizadas:
